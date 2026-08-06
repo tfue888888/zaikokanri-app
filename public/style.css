@@ -1,0 +1,169 @@
+:root {
+    color-scheme: light;
+    --bg: #effaf0;
+    --panel-bg: #ffffff;
+    --header-bg: #287d3c;
+    --header-text: #ffffff;
+    --button-bg: #6ec45d;
+    --button-text: #111111;
+    --button-border: rgba(64, 95, 48, 0.25);
+    --text: #1e2d2b;
+    --muted: #566358;
+    --muted-bg: rgba(108, 196, 93, 0.12);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.75), transparent 22%),
+                radial-gradient(circle at 80% 10%, rgba(247,255,228,0.9), transparent 20%),
+                radial-gradient(circle at 30% 80%, rgba(234,255,222,0.9), transparent 18%),
+                linear-gradient(180deg, #d6f5d9 0%, #c2e9ca 34%, #a7d3a6 100%);
+    overflow: hidden;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--text);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 12% 20%, rgba(87, 186, 120, 0.18), transparent 18%),
+        radial-gradient(circle at 85% 15%, rgba(191, 235, 175, 0.16), transparent 16%),
+        radial-gradient(circle at 50% 65%, rgba(255, 255, 255, 0.32), transparent 14%),
+        radial-gradient(circle at 20% 45%, rgba(226, 251, 227, 0.35), transparent 12%),
+        linear-gradient(135deg, transparent 35%, rgba(255,255,255,0.06) 35%, rgba(255,255,255,0.06) 65%, transparent 65%);
+    pointer-events: none;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 10% 80%, rgba(255,255,255,0.35), transparent 14%),
+        radial-gradient(circle at 32% 70%, rgba(210, 241, 206, 0.55), transparent 12%),
+        radial-gradient(circle at 56% 16%, rgba(244, 255, 230, 0.48), transparent 14%),
+        radial-gradient(circle at 72% 78%, rgba(198, 242, 195, 0.28), transparent 14%),
+        radial-gradient(circle at 85% 40%, rgba(250, 255, 231, 0.22), transparent 12%);
+    pointer-events: none;
+}
+
+.container{
+    position: relative;
+    width:min(420px, calc(100vw - 32px));
+    height:auto;
+    max-height: 840px;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius:28px;
+    box-shadow: 0 22px 50px rgba(29, 70, 36, 0.16);
+    padding: 30px;
+    border: 1px solid rgba(155, 206, 148, 0.28);
+    overflow: hidden;
+}
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 20px;
+    border-radius: 20px;
+    background-color: var(--header-bg);
+    color: var(--header-text);
+    margin-bottom: 32px;
+}
+
+.header-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.header-company {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.login-subtitle {
+    margin-bottom: 28px;
+    color: #2f5131;
+    font-size: 0.98rem;
+}
+
+.login-box{
+    display:flex;
+    flex-direction:column;
+}
+
+label{
+    font-size:16px;
+    margin-bottom:8px;
+    color: #36593f;
+}
+
+input{
+    height:52px;
+    margin-bottom:22px;
+    font-size:16px;
+    padding: 0 16px;
+    border:1px solid rgba(0,0,0,0.12);
+    border-radius:14px;
+    background: #f8fffa;
+}
+
+button{
+    height:58px;
+    background: var(--button-bg);
+    color: var(--button-text);
+    font-size:20px;
+    font-weight:700;
+    border:none;
+    border-radius:14px;
+    cursor:pointer;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+}
+
+button:hover,
+button:focus {
+    background: #55b147;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(88, 168, 97, 0.18);
+}
+
+#message{
+    margin-top:26px;
+    text-align:center;
+    color:#c32525;
+    min-height:24px;
+}
+
+.product-card{
+    background:white;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:10px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+}
+
+.product-card button{
+
+    margin-right:10px;
+
+    padding:8px 15px;
+
+    border:none;
+
+    border-radius:5px;
+
+    cursor:pointer;
+
+}

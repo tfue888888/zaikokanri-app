@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在庫管理システム</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+        <header class="app-header">
+            <div class="header-title">在庫管理システム</div>
+            <div class="header-company">杉カンパニー</div>
+        </header>
+
+        <div class="login-box">
+            <p class="login-subtitle">社員IDとパスワードでログインしてください</p>
+
+            <label>社員ID</label>
+            <input
+                type="text"
+                id="employeeId"
+                placeholder="社員IDを入力してください">
+
+            <label>パスワード</label>
+            <input
+                type="password"
+                id="password"
+                placeholder="********">
+
+            <button id="loginBtn">
+                ログイン
+            </button>
+
+            <p id="message"></p>
+        </div>
+    </div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
