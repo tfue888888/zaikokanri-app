@@ -2,6 +2,9 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name ="viewport"
+    content="width=device-width,
+    initial-scale=1.0">
     <title>在庫管理システム</title>
 
     <link rel="stylesheet" href="dashboard.css">
@@ -9,7 +12,10 @@
 <body>
     <header class="app-header">
         <div class="header-title">在庫管理システム</div>
-        <div class="header-company">杉カンパニー</div>
+        <div class="header-company-group">
+            <div class="header-company">杉カンパニー</div>
+            <button id="logoutBtn" type="button" class="logout-btn">ログアウト</button>
+        </div>
     </header>
 
     <main>
@@ -17,7 +23,54 @@
             <h2>商品一覧</h2>
         </section>
 
-        <div id="productList"></div>
+        <section class="product-form" id="productFormSection">
+            <div class="product-form-header">
+                <div class="product-form-title">商品追加</div>
+                <button id="toggleAddFormBtn" type="button" class="toggle-form-btn" aria-expanded="false" aria-controls="addProductPanel">＋</button>
+            </div>
+
+            <div id="addProductPanel" class="product-add-panel">
+                <input
+                    type="text"
+                    id="productName"
+                    placeholder="商品名">
+
+                <input
+                    type="text"
+                    id="janCode"
+                    placeholder="JANコード"
+                    maxlength="13"
+                    inputmode="numeric"
+                    pattern="\d*">
+
+                <input
+                    type="number"
+                    id="stock"
+                    placeholder="初期在庫"
+                    inputmode="numeric"
+                    pattern="\d*">
+
+                <button id="addProductBtn" type="button" class="stock-btn">
+                    追加する
+                </button>
+            </div>
+        </section>
+
+        <section class="search-section" aria-label="商品検索">
+            <div class="search-controls">
+                <div class="search-input-group">
+                    <input
+                        type="text"
+                        id="searchProduct"
+                        placeholder="商品名・JANコードで検索">
+                    <button id="searchProductBtn" type="button" class="search-btn" aria-label="検索">🔎</button>
+                    <button id="resetSearchBtn" type="button" class="reset-search-btn" aria-label="検索をリセット">リセット</button>
+                </div>
+                <div id="pageNumbers" class="page-numbers" aria-label="ページ番号"></div>
+            </div>
+        </section>
+
+        <div id="productList" aria-live="polite" aria-atomic="true"></div>
     </main>
 
     <script src="dashboard.js"></script>

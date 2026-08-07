@@ -33,7 +33,11 @@ loginBtn.addEventListener("click", async () => {
 
     if (data.success) {
 
+    const storedEmployeeId = data.user.employee_id ?? data.user.employeeId ?? employeeId;
+
     localStorage.setItem("userId", data.user.id);
+    localStorage.setItem("employeeId", storedEmployeeId);
+    localStorage.setItem("role", data.user.role ?? (storedEmployeeId === "EMP001" ? "admin" : "employee"));
 
     window.location.href = "dashboard.html";
 

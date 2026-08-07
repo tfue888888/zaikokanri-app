@@ -37,9 +37,38 @@ body {
     font-weight: 700;
 }
 
+.header-company-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .header-company {
     font-size: 1rem;
     font-weight: 600;
+}
+
+.logout-btn {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    color: var(--header-text);
+    padding: 8px 14px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.16s ease, transform 0.16s ease;
+}
+
+.logout-btn:hover,
+.logout-btn:focus {
+    background: rgba(255, 255, 255, 0.28);
+    transform: translateY(-1px);
+}
+
+.logout-btn:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.35);
+    outline-offset: 2px;
 }
 
 main {
@@ -97,6 +126,59 @@ main {
     transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
 }
 
+.delete-btn {
+    margin-top: 14px;
+    margin-right: 10px;
+    padding: 8px 14px;
+    min-height: 38px;
+    border: 1px solid rgba(181, 43, 43, 0.2);
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: #b52b2b;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease, color 0.16s ease;
+}
+
+.delete-btn:hover,
+.delete-btn:focus {
+    background-color: #fff5f5;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(181, 43, 43, 0.12);
+}
+
+.delete-btn:focus-visible {
+    outline: 3px solid rgba(181, 43, 43, 0.25);
+    outline-offset: 2px;
+}
+
+.edit-btn {
+    margin-top: 12px;
+    margin-right: 8px;
+    padding: 6px 12px;
+    min-height: 30px;
+    border: 1px solid #d1d1d1;
+    border-radius: 10px;
+    background-color: #f0f0f0;
+    color: #1e1e1e;
+    font-weight: 700;
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease, color 0.16s ease;
+}
+
+.edit-btn:hover,
+.edit-btn:focus {
+    background-color: #e2e2e2;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
+}
+
+.edit-btn:focus-visible {
+    outline: 3px solid rgba(0, 0, 0, 0.18);
+    outline-offset: 2px;
+}
+
 .stock-btn:hover,
 .stock-btn:focus {
     background-color: #55b147;
@@ -109,6 +191,233 @@ main {
     outline-offset: 2px;
 }
 
+.product-form {
+    margin-bottom: 26px;
+    background: var(--card-bg);
+    border: 1px solid rgba(44, 110, 60, 0.14);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(32, 90, 37, 0.06);
+}
+
+.search-section {
+    margin-bottom: 24px;
+}
+
+.search-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.page-numbers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 0;
+    margin-left: 0;
+}
+
+.page-number-btn {
+    min-width: 38px;
+    padding: 8px 10px;
+    border: 1px solid rgba(38, 107, 57, 0.18);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--text);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.page-number-btn.active {
+    background: var(--button-bg);
+    color: var(--button-text);
+}
+
+.search-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 520px;
+}
+
+.search-input-group input {
+    flex: 1;
+    margin-bottom: 0;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(38, 107, 57, 0.18);
+    background: #f7fbf7;
+    color: var(--text);
+    font-size: 1rem;
+}
+
+.search-input-group input:focus {
+    outline: none;
+    border-color: #5dac6f;
+    box-shadow: 0 0 0 3px rgba(90, 173, 113, 0.14);
+}
+
+.search-btn {
+    margin-top: 0;
+    padding: 12px 16px;
+    min-width: 48px;
+    border: 1px solid var(--button-border);
+    border-radius: 14px;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+}
+
+.search-btn:hover,
+.search-btn:focus {
+    background-color: #55b147;
+    transform: translateY(-1px);
+}
+
+.reset-search-btn {
+    margin-top: 0;
+    padding: 12px 14px;
+    border: 1px solid rgba(181, 43, 43, 0.18);
+    border-radius: 14px;
+    background-color: #fff5f5;
+    color: #b52b2b;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+}
+
+.reset-search-btn:hover,
+.reset-search-btn:focus {
+    background-color: #ffeaea;
+    transform: translateY(-1px);
+}
+
+.product-form-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.product-form-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #174824;
+}
+
+.toggle-form-btn {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: none;
+    background: var(--button-bg);
+    color: var(--button-text);
+    font-size: 1.35rem;
+    cursor: pointer;
+    box-shadow: 0 8px 16px rgba(76, 139, 74, 0.18);
+    transition: transform 0.16s ease, background-color 0.16s ease;
+}
+
+.toggle-form-btn:hover,
+.toggle-form-btn:focus {
+    background-color: #55b147;
+    transform: translateY(-1px);
+}
+
+.product-add-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+.product-add-panel.visible {
+    max-height: 320px;
+    opacity: 1;
+}
+
+.product-add-panel input,
+.product-card .edit-panel input {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(38, 107, 57, 0.18);
+    background: #f7fbf7;
+    color: var(--text);
+    font-size: 1rem;
+}
+
+.product-add-panel input:focus,
+.product-card .edit-panel input:focus {
+    outline: none;
+    border-color: #5dac6f;
+    box-shadow: 0 0 0 3px rgba(90, 173, 113, 0.14);
+}
+
+.product-add-panel .stock-btn,
+.product-card .edit-panel .stock-btn {
+    width: auto;
+    margin-top: 0;
+}
+
+.product-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.product-card-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #184a2f;
+    flex: 1 1 auto;
+}
+
+.card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.card-actions.right-actions {
+    margin-top: 0;
+    justify-content: flex-end;
+}
+
+.edit-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    margin-top: 16px;
+    display: grid;
+    gap: 10px;
+}
+
+.edit-panel.visible {
+    max-height: 260px;
+    opacity: 1;
+}
+
+.edit-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
 @media (max-width: 720px) {
     .app-header {
         flex-direction: column;
@@ -119,5 +428,14 @@ main {
     .stock-btn {
         width: 100%;
         margin-right: 0;
+    }
+
+    .product-form-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .toggle-form-btn {
+        width: 100%;
     }
 }

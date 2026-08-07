@@ -57,9 +57,15 @@ app.post("/login",(req,res) => {
             });
         }
 
+        const user = results[0];
+        const normalizedUser = {
+            ...user,
+            role: user.role || (employeeId === "EMP001" ? "admin" : "employee")
+        };
+
         res.json({
             success:true,
-            user:results[0]
+            user: normalizedUser
         });
 
     }
@@ -120,79 +126,261 @@ app.post("/stock/update", (req, res) => {
         });
     }
 
-    const checkSql = `SELECT stock FROM products WHERE id = ?`;
-    
-    const updateSql = `
-        UPDATE products
-        SET stock = stock + ?
+    // 現在の在庫を取得
+    const checkSql = `
+        SELECT stock
+        FROM products
         WHERE id = ?
     `;
 
-    db.query(updateSql, [change, productId], (err, result) => {
-        db.query(checkSql,[productId],(err,results) => {
-        if(err){
-            console.log(err);
+    db.query(checkSql, [productId], (err, results) => {
 
-            return res.json({
-              success:false
-            });
-
-        if(results.length === 0){
-            return res.json({
-                success:false,
-                message:"商品が存在しません"
-            })
-        }
-        
-        const currentStock = results[0].stock;
-        if(change === -1 && currentStock <= 0){
-            return res .json({
-                success:false,
-                message:"在庫が不足しています"
-            })
-        }
-        }
-    });
         if (err) {
             console.log(err);
             return res.status(500).json({
                 success: false,
-                message: "在庫更新に失敗しました"
+                message: "在庫確認に失敗しました"
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "商品が存在しません"
+            });
+        }
+
+        const currentStock = results[0].stock;
+
+        // 販売・廃棄で在庫が0なら更新しない
+        if (change === -1 && currentStock <= 0) {
+            return res.json({
+                success: false,
+                message: "在庫が不足しています"
+            });
+        }
+
+        // 在庫を更新
+        const updateSql = `
+            UPDATE products
+            SET stock = stock + ?
+            WHERE id = ?
+        `;
+
+        db.query(updateSql, [change, productId], (err, result) => {
+
+            if (err) {
+                console.log(err);
+                return res.status(500).json({
+                    success: false,
+                    message: "在庫更新に失敗しました"
+                });
+            }
+
+            // 履歴を保存
+            const logSql = `
+                INSERT INTO stock_logs
+                (user_id, product_id, action, quantity, created_at)
+                VALUES (?, ?, ?, ?, NOW())
+            `;
+
+            db.query(
+                logSql,
+                [parsedUserId, productId, logAction, Math.abs(change)],
+                (err) => {
+
+                    if (err) {
+                        console.log(err);
+                        return res.status(500).json({
+                            success: false,
+                            message: "履歴保存に失敗しました"
+                        });
+                    }
+
+                    res.json({
+                        success: true,
+                        message: "在庫を更新しました"
+                    });
+
+                }
+            );
+
+        });
+
+    });
+
+});
+
+app.post("/products", (req, res) => {
+    return res.json({
+      success:false,
+      message:"権限がありません"
+    });
+
+    const { productName, janCode, stock } = req.body;
+
+    if (typeof productName !== "string" || productName.trim().length === 0 || productName.trim().length > 50) {
+        return res.status(400).json({
+            success: false,
+            message: "商品名は1〜50文字で入力してください。"
+        });
+    }
+
+    if (!Number.isInteger(Number(stock)) || Number(stock) < 0) {
+        return res.status(400).json({
+            success: false,
+            message: "在庫は0以上の整数で入力してください。"
+        });
+    }
+
+    const checkSql = `
+        SELECT id
+        FROM products
+        WHERE product_name = ?
+           OR jan_code = ?
+    `;
+
+    db.query(checkSql, [productName, janCode], (err, results) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({
+                success: false,
+                message: "登録前の重複チェックに失敗しました。"
+            });
+        }
+
+        if (results.length > 0) {
+            return res.json({
+                success: false,
+                message: "同じ商品名または同じJANコードの商品はすでに登録されています。"
+            });
+        }
+
+        const sql = `INSERT INTO products
+(product_name,jan_code,stock)
+VALUE(?,?,?)`;
+
+        db.query(
+            sql,
+            [productName, janCode, stock],
+            (err) => {
+                if (err) {
+                    console.log(err);
+                    return res.json({
+                        success: false,
+                        message: "商品追加に失敗しました。"
+                    });
+                }
+
+                res.json({
+                    success: true
+                });
+            }
+        );
+    });
+});
+
+app.delete("/products/:id", (req, res) => {
+    const productId = Number(req.params.id);
+
+    if (!Number.isInteger(productId)) {
+        return res.status(400).json({
+            success: false,
+            message: "商品IDが不正です。"
+        });
+    }
+
+    const sql = `
+        DELETE FROM products
+        WHERE id = ?
+    `;
+
+    db.query(sql, [productId], (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({
+                success: false,
+                message: "商品削除に失敗しました。"
             });
         }
 
         if (result.affectedRows === 0) {
             return res.status(404).json({
                 success: false,
-                message: "対象の商品が見つかりません"
+                message: "商品が見つかりません。"
             });
         }
 
-        const logSql = `
-            INSERT INTO stock_logs (user_id, product_id, action, quantity, created_at)
-            VALUES (?, ?, ?, ?, NOW())
-        `;
+        res.json({
+            success: true,
+            message: "商品を削除しました。"
+        });
+    });
+});
 
-       db.query(logSql, [parsedUserId, productId, logAction, Math.abs(change)], (err) => {
+app.put("/products/:id", (req, res) => {
+    const productId = Number(req.params.id);
+    const { productName, janCode } = req.body;
 
-    console.log(err);
-
-    if (err) {
-        return res.json({
-            success: false
+    if (!Number.isInteger(productId) || !productName || !/^\d{13}$/.test(janCode)) {
+        return res.status(400).json({
+            success: false,
+            message: "商品名とJANコードを正しく入力してください。JANコードは13桁の半角数字です。"
         });
     }
 
-    res.json({
-        success: true
+    const checkSql = `
+        SELECT id
+        FROM products
+        WHERE (product_name = ? OR jan_code = ?)
+          AND id != ?
+    `;
+
+    db.query(checkSql, [productName, janCode, productId], (err, results) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({
+                success: false,
+                message: "商品情報更新前の重複チェックに失敗しました。"
+            });
+        }
+
+        if (results.length > 0) {
+            return res.json({
+                success: false,
+                message: "同じ商品名または同じJANコードの商品がすでに存在します。"
+            });
+        }
+
+        const updateSql = `
+            UPDATE products
+            SET product_name = ?, jan_code = ?
+            WHERE id = ?
+        `;
+
+        db.query(updateSql, [productName, janCode, productId], (err, result) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({
+                    success: false,
+                    message: "商品情報の更新に失敗しました。"
+                });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "商品が見つかりません。"
+                });
+            }
+
+            res.json({
+                success: true,
+                message: "商品情報を更新しました。"
+            });
+        });
     });
-
 });
-    });
-});
-
-
-
 
 app.listen(port, () => {
     console.log(`サーバー起動：http://localhost:${port}`);
