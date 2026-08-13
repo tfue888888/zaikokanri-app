@@ -3,6 +3,7 @@ const express = require("express");
 const mysql = require("mysql2");
 const bcrypt = require("bcrypt");
 const path = require("path");
+const { count } = require("console");
 
 const app = express();
 const port = 3000;
@@ -25,13 +26,22 @@ db.connect((err) => {
     console.log("MySQL接続成功");
 });
 
+const safeQuery = (sql, params, callback) => {
+    // SQLインジェクション対策:
+    // 1) ユーザー入力を SQL 文字列に直接連結しない
+    // 2) プレースホルダー ? を使って値を渡す
+    db.execute(sql, params, callback);
+};
+
 app.post("/login",(req,res) => {
     const {employeeId,password} = req.body;
-    const sql = `SELECT*FROM users WHERE employee_id = ?`;
-    db.query(sql,[employeeId],(err,results) => {
-        if(err){console.log(err);
-            return;}
-            console.log(results);
+    const sql = `SELECT * FROM users WHERE employee_id = ?`;
+    safeQuery(sql, [employeeId], (err, results) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        console.log(results);
 
         if (results.length === 0) {
     return res.json({
@@ -94,6 +104,93 @@ app.get("/products", (req, res) => {
 
 });
 
+app.get("/dashboard/product-count",(req,res) => {
+
+    const sql = `SELECT COUNT (*) AS count FROM products`;
+    db.query(sql,(err,results) => {
+        if(err){
+            console.log(err);
+
+            return
+            res.status(500).json({success:false});
+        }
+        res.json({success: true,count:results[0].count})
+    })
+})
+
+app.get("/dashboard/lowstock",(req,res)=>{
+
+    const sql =` SELECT COUNT(*) AS count
+    FROM products
+    WHERE stock <= 5`;
+
+    db.query(sql,(err,results)=>{
+
+        if(err){
+            console.log(err);
+
+            return
+            res.status(500).json({
+                success:false
+            });
+        }
+
+        res.json({
+            success:true,
+            count:results[0].count
+        });
+    });
+});
+
+app.get("/dashboard/today-sales",(req,res) =>{
+
+    const sql =`SELECT COALESCE(SUM(quantity),0) AS count
+    FROM stock_logs
+    WHERE action = '売上
+    AND DATE(created_at) = CURDATE()`;
+
+    db.query(sql,(err,results) => {
+
+        if(err){
+            console.log(err);
+
+            return
+        res.status(500).json({
+            success:false
+        });
+        }
+
+        res.json({
+            success:true,
+            count:
+            results[0].count
+        });
+    });
+});
+
+app.get("/dashbaord/today-actions",(req,res) => {
+
+    const sql = `SELECT COUNT(*) AS count
+                FROM stock_logs
+                WHERE DATE(create_at) = CURDATE()`;
+
+    db.query(sql,(err,results) => {
+        if(err){
+            console.log(err);
+
+            return
+    res.status(500).json({
+        success:false
+    });
+        }
+
+        res.json({
+            success:true,
+            count:results[0].count
+        });
+    });
+
+});
 app.post("/stock/update", (req, res) => {
     const { id, action, userId } = req.body;
 
@@ -382,7 +479,11 @@ app.put("/products/:id", (req, res) => {
     });
 });
 
-app.listen(port, () => {
-    console.log(`サーバー起動：http://localhost:${port}`);
-});
+if(require.main === module ){
+    app.listen(3000,() => {
+        console.log("サーバー起動:http://localhost:3000");
+    });
+}
+app.db = db;
 
+module.exports = app;

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang ="ja">
+
+<head>
+     <meta charset="UTF-8">
+
+     <meta name="viewport"
+       content="width=device-width,initial-scale=1.0">
+
+       <title>ダッシュボード</title>
+
+       <link rel ="stylesheet"
+       href="dashboard-page.css">
+</head>
+
+<body class="dashboard-page">
+    <div class="dashboard-header">
+        <button id="menuButton" class="menu-button" aria-label="メニュー">≡</button>
+        <h1>ダッシュボード</h1>
+    </div>
+
+    <div class="dashboard">
+
+        <div class ="dashboard-card">
+            <h2>登録商品数</h2>
+            <p id="productCount">-</p>
+        </div>
+
+    <div class ="dashboard-card">
+            <h2>在庫不足数</h2>
+            <p id="lowStockCount">-</p>
+    </div>
+    
+    <div class ="dashboard-card">
+            <h2>今日の販売数</h2>
+            <p id="todaySales">-</p>
+    </div>
+    
+    <div class="dashboard-card">
+            <h2>今日の販売件数</h2>
+            <p id ="todayActions">-</p>
+    </div>
+
+
+    <div id="sideMenu" class="side-menu">
+        <h2>メニュー</h2>
+        <button id="dashboardButton" type="button">ダッシュボード</button>
+        <button id="productButton" type="button">商品一覧</button>
+        <button id="historyButton" type="button">操作履歴</button>
+        <button id="logoutButton" type="button">ログアウト</button>
+    </div>
+
+<script src="dashboard-page.js"></script>
+</body>
+</html>

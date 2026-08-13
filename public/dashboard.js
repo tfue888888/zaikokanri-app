@@ -2,8 +2,13 @@ const logoutBtn = document.getElementById("logoutBtn");
 let allProducts = [];
 let activeSearchTerm = "";
 let currentPage = 1;
-const pageSize = 10;
+const DESKTOP_PAGE_SIZE = 20;
+const MOBILE_PAGE_SIZE = 10;
 const productFormSection = document.getElementById("productFormSection");
+
+function getPageSize() {
+    return window.innerWidth <= 768 ? MOBILE_PAGE_SIZE : DESKTOP_PAGE_SIZE;
+}
 
 function isAdminUser() {
     const role = localStorage.getItem("role");
@@ -21,6 +26,50 @@ applyAdminVisibility();
 
 if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("userId");
+        window.location.href = "index.html";
+    });
+}
+
+const menuButton = document.getElementById("menuButton");
+const sideMenu = document.getElementById("sideMenu");
+
+if (menuButton && sideMenu) {
+    menuButton.addEventListener("click", () => {
+        sideMenu.classList.toggle("open");
+    });
+
+    document.addEventListener("click", (event) => {
+        if (!sideMenu.classList.contains("open")) {
+            return;
+        }
+
+        const target = event.target;
+        if (target === menuButton || sideMenu.contains(target)) {
+            return;
+        }
+
+        sideMenu.classList.remove("open");
+    });
+}
+
+const dashboardButton = document.getElementById("dashboardButton");
+if (dashboardButton) {
+    dashboardButton.addEventListener("click", () => {
+        window.location.href = "dashboard-page.html";
+    });
+}
+
+const productButton = document.getElementById("productButton");
+if (productButton) {
+    productButton.addEventListener("click", () => {
+        window.location.href = "dashboard.html";
+    });
+}
+
+const logoutButton = document.getElementById("logoutButton");
+if (logoutButton) {
+    logoutButton.addEventListener("click", () => {
         localStorage.removeItem("userId");
         window.location.href = "index.html";
     });
@@ -99,6 +148,7 @@ function renderPageNumbers(totalItems) {
         return;
     }
 
+    const pageSize = getPageSize();
     const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
     pageNumbers.innerHTML = "";
 
@@ -115,8 +165,18 @@ function renderPageNumbers(totalItems) {
     }
 }
 
+function updateResultCount(totalItems, visibleItems) {
+    const resultCount = document.getElementById("resultCount");
+    if (!resultCount) {
+        return;
+    }
+
+    resultCount.textContent = `全${totalItems}商品中${visibleItems}商品表示中`;
+}
+
 function renderCurrentProducts() {
     const filteredProducts = getFilteredProducts();
+    const pageSize = getPageSize();
     const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
 
     if (currentPage > totalPages) {
@@ -128,6 +188,7 @@ function renderCurrentProducts() {
 
     renderProducts(pagedProducts);
     renderPageNumbers(filteredProducts.length);
+    updateResultCount(filteredProducts.length, pagedProducts.length);
 }
 
 async function loadProducts() {
@@ -394,7 +455,7 @@ if (toggleAddFormBtn && addProductPanel) {
 
 const searchInput = document.getElementById("searchProduct");
 const searchButton = document.getElementById("searchProductBtn");
-const resetSearchButton = document.getElementById("resetSearchBtn");
+const clearSearchButton = document.getElementById("clearSearchBtn");
 
 if (searchInput && searchButton) {
     searchButton.addEventListener("click", () => {
@@ -413,12 +474,13 @@ if (searchInput && searchButton) {
     });
 }
 
-if (resetSearchButton && searchInput) {
-    resetSearchButton.addEventListener("click", () => {
+if (clearSearchButton && searchInput) {
+    clearSearchButton.addEventListener("click", () => {
         activeSearchTerm = "";
         searchInput.value = "";
         currentPage = 1;
         renderCurrentProducts();
+        searchInput.focus();
     });
 }
 

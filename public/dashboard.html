@@ -9,7 +9,15 @@
 
     <link rel="stylesheet" href="dashboard.css">
 </head>
-<body>
+<body class="product-page">
+    <div id="sideMenu" class="side-menu">
+        <h2>メニュー</h2>
+        <button id="dashboardButton" type="button">ダッシュボード</button>
+        <button id="productButton" type="button">商品一覧</button>
+        <button id="historyButton" type="button">操作履歴</button>
+        <button id="logoutButton" type="button">ログアウト</button>
+    </div>
+
     <header class="app-header">
         <div class="header-title">在庫管理システム</div>
         <div class="header-company-group">
@@ -17,6 +25,10 @@
             <button id="logoutBtn" type="button" class="logout-btn">ログアウト</button>
         </div>
     </header>
+
+    <div class="menu-row">
+        <button id="menuButton" class="menu-button" aria-label="メニュー">≡</button>
+    </div>
 
     <main>
         <section class="section-title">
@@ -59,14 +71,19 @@
         <section class="search-section" aria-label="商品検索">
             <div class="search-controls">
                 <div class="search-input-group">
-                    <input
-                        type="text"
-                        id="searchProduct"
-                        placeholder="商品名・JANコードで検索">
+                    <div class="search-input-wrapper">
+                        <input
+                            type="text"
+                            id="searchProduct"
+                            placeholder="商品名・JANコードで検索">
+                        <button id="clearSearchBtn" type="button" class="clear-input-btn" aria-label="検索文字をクリア">×</button>
+                    </div>
                     <button id="searchProductBtn" type="button" class="search-btn" aria-label="検索">🔎</button>
-                    <button id="resetSearchBtn" type="button" class="reset-search-btn" aria-label="検索をリセット">リセット</button>
                 </div>
-                <div id="pageNumbers" class="page-numbers" aria-label="ページ番号"></div>
+                <div class="pagination-info">
+                    <div id="pageNumbers" class="page-numbers" aria-label="ページ番号"></div>
+                    <div id="resultCount" class="result-count" aria-live="polite">0商品中0商品表示中</div>
+                </div>
             </div>
         </section>
 
