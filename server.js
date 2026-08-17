@@ -8,14 +8,17 @@ const { count } = require("console");
 const app = express();
 const port = 3000;
 
+require("dotenv").config();
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname,"public")));
 
-const db = mysql.createConnection({
-    host:"localhost",
-    user:"root",
-    password:"sugitanikeita888",
-    database:"stock_management"
+const db =
+mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password:process.env.DB_PASSWORD,
+    database:process.env.DB_NAME
 });
 
 db.connect((err) => {
@@ -111,8 +114,7 @@ app.get("/dashboard/product-count",(req,res) => {
         if(err){
             console.log(err);
 
-            return
-            res.status(500).json({success:false});
+            return res.status(500).json({success:false});
         }
         res.json({success: true,count:results[0].count})
     })
@@ -129,8 +131,7 @@ app.get("/dashboard/lowstock",(req,res)=>{
         if(err){
             console.log(err);
 
-            return
-            res.status(500).json({
+            return res.status(500).json({
                 success:false
             });
         }
@@ -146,7 +147,7 @@ app.get("/dashboard/today-sales",(req,res) =>{
 
     const sql =`SELECT COALESCE(SUM(quantity),0) AS count
     FROM stock_logs
-    WHERE action = '売上
+    WHERE action = '売上'
     AND DATE(created_at) = CURDATE()`;
 
     db.query(sql,(err,results) => {
@@ -309,11 +310,6 @@ app.post("/stock/update", (req, res) => {
 });
 
 app.post("/products", (req, res) => {
-    return res.json({
-      success:false,
-      message:"権限がありません"
-    });
-
     const { productName, janCode, stock } = req.body;
 
     if (typeof productName !== "string" || productName.trim().length === 0 || productName.trim().length > 50) {
