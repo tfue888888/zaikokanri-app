@@ -2,7 +2,7 @@ body{
     font-family: sans-serif;
     margin:0;
     padding:20px;
-    background-color:#f5f5f5;
+    background: linear-gradient(180deg, #effaf0 0%, #f4fbf2 100%);
 }
 
 h1{
@@ -10,20 +10,22 @@ h1{
 }
 
 .dashboard-card{
-    background-color:white;
+    background: #ffffff;
+    border: 1px solid rgba(44, 110, 60, 0.18);
     padding:25px;
-    border-radius:10px;
-    box-shadow: 0 2px 5px
-    rgba(0,0,0,0.1);
+    border-radius:18px;
+    box-shadow: 0 10px 25px rgba(36, 87, 45, 0.06);
 }
 
 .dashboard-card h2{
     font-size:18px;
+    color: #184a2f;
 }
 
 .dashboard-card p{
     font-size:32px;
-    font-weight:bpld;
+    font-weight:700;
+    color: #184a2f;
 }
 /*スマートフォン*/
 @media screen and (max-width:768px){
@@ -55,16 +57,58 @@ h1{
     font-size: 2rem;
 }
 
+.dashboard-page {
+    min-height: 100vh;
+    padding: 24px 20px 32px;
+    background: linear-gradient(180deg, #effaf0 0%, #f4fbf2 100%);
+}
+
 .dashboard-page .dashboard-header {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 18px;
-    margin-bottom: 24px;
+    justify-content: center;
+    width: min(1100px, 100%);
+    margin: 0 auto 24px;
+}
+
+.dashboard-page .menu-button {
+    position: absolute;
+    left: -60px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .dashboard-page .dashboard-header h1 {
     margin: 0;
     font-size: 2rem;
+    text-align: center;
+}
+
+.dashboard-page .dashboard {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    gap: 20px;
+    justify-items: center;
+    align-items: stretch;
+}
+
+.dashboard-page .dashboard-card {
+    width: 100%;
+    max-width: 420px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.dashboard-page .dashboard > .dashboard-card:nth-child(3) {
+    grid-column: 1 / -1;
+    justify-self: center;
 }
 
 .side-menu {
@@ -108,4 +152,28 @@ h1{
     cursor: pointer;
 
     text-align: left;
+}
+
+.csv-export-menu {
+    margin-bottom: 10px;
+}
+
+.csv-export-toggle {
+    margin-bottom: 8px;
+}
+
+.csv-export-submenu {
+    display: none;
+    gap: 8px;
+    padding: 0 6px;
+}
+
+.csv-export-submenu.open {
+    display: grid;
+}
+
+.csv-export-submenu button {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    background-color: #edf7e8;
 }

@@ -36,17 +36,20 @@
             <p id="todaySales">-</p>
     </div>
     
-    <div class="dashboard-card">
-            <h2>今日の販売件数</h2>
-            <p id ="todayActions">-</p>
-    </div>
-
-
     <div id="sideMenu" class="side-menu">
         <h2>メニュー</h2>
         <button id="dashboardButton" type="button">ダッシュボード</button>
         <button id="productButton" type="button">商品一覧</button>
         <button id="historyButton" type="button">操作履歴</button>
+
+        <div class="csv-export-menu">
+            <button id="csvExportToggle" type="button" class="csv-export-toggle" aria-expanded="false">CSV出力</button>
+            <div id="csvExportMenu" class="csv-export-submenu">
+                <button id="exportPurchaseHistoryBtn" type="button">発注履歴を出力</button>
+                <button id="exportDiscardHistoryBtn" type="button">廃棄履歴を出力</button>
+            </div>
+        </div>
+
         <button id="logoutButton" type="button">ログアウト</button>
     </div>
 

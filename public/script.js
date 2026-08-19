@@ -39,7 +39,13 @@ loginBtn.addEventListener("click", async () => {
     localStorage.setItem("employeeId", storedEmployeeId);
     localStorage.setItem("role", data.user.role ?? (storedEmployeeId === "EMP001" ? "admin" : "employee"));
 
-    window.location.href = "dashboard.html";
+    const isMobileScreen = window.matchMedia("(max-width: 768px)").matches || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+    if (isMobileScreen) {
+        window.location.href = "mobile-menu.html";
+    } else {
+        window.location.href = "dashboard.html";
+    }
 
 } else {
 

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>操作履歴</title>
+
+    <link rel="stylesheet"
+        href="operation-history.css">
+</head>
+
+<body>
+
+    <div class="history-header">
+
+        <button
+            id="menuButton"
+            class="menu-button"
+            type="button">
+            ≡
+        </button>
+
+        <h1>操作履歴</h1>
+
+    </div>
+
+    <div class="history-container">
+        <div class="history-search-box">
+            <input
+                id="historySearchInput"
+                type="text"
+                placeholder="商品名または社員名で検索"
+                aria-label="操作履歴の検索"
+            >
+            <input
+                id="historyDateInput"
+                type="date"
+                aria-label="日付で絞り込み"
+            >
+            <select id="historyDaysFilter" aria-label="期間で絞り込み">
+                <option value="">期間</option>
+                <option value="1">1日以内</option>
+                <option value="3">3日以内</option>
+                <option value="7">1週間以内</option>
+                <option value="30">1か月以内</option>
+                <option value="90">3か月以内</option>
+            </select>
+            <select id="historyActionFilter" aria-label="操作種別で絞り込み">
+                <option value="">操作種別</option>
+                <option value="検品">検品</option>
+                <option value="廃棄">廃棄</option>
+                <option value="売上">売上</option>
+                <option value="追加">追加</option>
+                <option value="編集">編集</option>
+                <option value="削除">削除</option>
+            </select>
+            <button id="historySearchBtn" type="button">検索</button>
+            <button id="historyClearBtn" type="button" class="clear-btn">クリア</button>
+        </div>
+
+        <div id="historyList">
+            <p>読み込み中...</p>
+        </div>
+
+        <div id="historyPagination" class="history-pagination" aria-label="操作履歴のページ切替"></div>
+
+    </div>
+
+    <div id="sideMenu" class="side-menu">
+
+        <h2>メニュー</h2>
+
+        <button id="dashboardButton" type="button">
+            ダッシュボード
+        </button>
+
+        <button id="productButton" type="button">
+            商品一覧
+        </button>
+
+        <button id="historyButton" type="button">
+            操作履歴
+        </button>
+
+        <div class="csv-export-menu">
+            <button id="csvExportToggle" type="button" class="csv-export-toggle" aria-expanded="false">CSV出力</button>
+            <div id="csvExportMenu" class="csv-export-submenu">
+                <button id="exportPurchaseHistoryBtn" type="button">発注履歴を出力</button>
+                <button id="exportDiscardHistoryBtn" type="button">廃棄履歴を出力</button>
+            </div>
+        </div>
+
+        <button id="logoutButton" type="button">
+            ログアウト
+        </button>
+
+    </div>
+
+    <script src="operation-history.js"></script>
+
+</body>
+
+</html>

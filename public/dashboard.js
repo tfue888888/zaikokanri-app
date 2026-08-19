@@ -1,5 +1,6 @@
 const logoutBtn = document.getElementById("logoutBtn");
 let allProducts = [];
+let allPurchaseOrders = [];
 let activeSearchTerm = "";
 let currentPage = 1;
 const DESKTOP_PAGE_SIZE = 20;
@@ -201,6 +202,7 @@ async function loadProducts() {
 
         const products = await response.json();
         allProducts = products;
+        populatePurchaseOrderOptions();
         renderCurrentProducts();
     } catch (error) {
         console.error(error);
@@ -212,7 +214,179 @@ async function loadProducts() {
     }
 }
 
+function populatePurchaseOrderOptions() {
+    const select = document.getElementById("purchaseProductId");
+    if (!select) {
+        return;
+    }
+
+    const selectedValue = select.value;
+    select.innerHTML = '<option value="">商品を選択</option>';
+
+    allProducts.forEach((product) => {
+        const option = document.createElement("option");
+        option.value = String(product.id);
+        option.textContent = `${product.product_name}（在庫:${product.stock}）`;
+        if (selectedValue && String(product.id) === selectedValue) {
+            option.selected = true;
+        }
+        select.appendChild(option);
+    });
+}
+
+async function loadPurchaseOrders() {
+    try {
+        const response = await fetch("/purchase-orders");
+
+        if (!response.ok) {
+            throw new Error("発注データの取得に失敗しました");
+        }
+
+        const data = await response.json();
+        allPurchaseOrders = Array.isArray(data.orders) ? data.orders : [];
+        renderPurchaseOrders();
+    } catch (error) {
+        console.error(error);
+        const panel = document.getElementById("purchaseOrderList");
+        if (panel) {
+            panel.innerHTML = "<p>発注データの取得に失敗しました。</p>";
+        }
+    }
+}
+
+function renderPurchaseOrders() {
+    const panel = document.getElementById("purchaseOrderList");
+    if (!panel) {
+        return;
+    }
+
+    const pendingOrders = allPurchaseOrders.filter((order) => order.status !== "入荷済");
+
+    if (pendingOrders.length === 0) {
+        panel.innerHTML = "<p>発注予定はまだありません。</p>";
+        return;
+    }
+
+    panel.innerHTML = pendingOrders.map((order) => {
+        const expectedDate = order.expected_date ? new Date(order.expected_date).toLocaleDateString("ja-JP") : "未設定";
+
+        return `
+            <div class="purchase-order-card">
+                <div class="purchase-order-head">
+                    <strong>${order.product_name}</strong>
+                    <span class="purchase-status pending">未入荷</span>
+                </div>
+                <p>仕入先：${order.supplier_name}</p>
+                <p>数量：${order.quantity}個</p>
+                <p>希望納品日：${expectedDate}</p>
+                <p>備考：${order.order_note || "なし"}</p>
+                <button type="button" class="receive-order-btn" data-id="${order.id}">
+                    入荷登録
+                </button>
+            </div>
+        `;
+    }).join("");
+}
+
+async function createPurchaseOrder() {
+    const productId = Number(document.getElementById("purchaseProductId")?.value || 0);
+    const supplierName = document.getElementById("purchaseSupplier")?.value.trim() || "";
+    const quantity = Number(document.getElementById("purchaseQuantity")?.value || 0);
+    const expectedDate = document.getElementById("purchaseExpectedDate")?.value || "";
+    const notes = document.getElementById("purchaseNote")?.value.trim() || "";
+    const userId = Number(localStorage.getItem("userId"));
+
+    if (!Number.isInteger(productId) || productId <= 0) {
+        alert("発注する商品を選択してください。");
+        return;
+    }
+
+    if (!supplierName) {
+        alert("仕入先名を入力してください。");
+        return;
+    }
+
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+        alert("発注数量は1以上で入力してください。");
+        return;
+    }
+
+    if (!Number.isInteger(userId)) {
+        alert("ログイン情報が見つかりません。再ログインしてください。");
+        return;
+    }
+
+    try {
+        const response = await fetch("/purchase-orders", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                productId,
+                supplierName,
+                quantity,
+                expectedDate,
+                notes,
+                userId
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "発注登録に失敗しました。");
+        }
+
+        document.getElementById("purchaseSupplier").value = "";
+        document.getElementById("purchaseQuantity").value = "";
+        document.getElementById("purchaseExpectedDate").value = "";
+        document.getElementById("purchaseNote").value = "";
+        document.getElementById("purchaseProductId").value = "";
+
+        await loadPurchaseOrders();
+        await loadProducts();
+        alert("発注を登録しました。");
+    } catch (error) {
+        console.error(error);
+        alert(error.message || "発注登録に失敗しました。");
+    }
+}
+
+async function receivePurchaseOrder(orderId) {
+    const userId = Number(localStorage.getItem("userId"));
+
+    if (!Number.isInteger(userId)) {
+        alert("ログイン情報が見つかりません。再ログインしてください。");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/purchase-orders/${orderId}/receive`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ userId })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "入荷処理に失敗しました。");
+        }
+
+        await loadPurchaseOrders();
+        await loadProducts();
+        alert("入荷を反映しました。");
+    } catch (error) {
+        console.error(error);
+        alert(error.message || "入荷処理に失敗しました。");
+    }
+}
+
 loadProducts();
+loadPurchaseOrders();
 
 async function updateStock(id, action) {
 
@@ -302,13 +476,35 @@ if (productList) {
     });
 }
 
+const createPurchaseOrderBtn = document.getElementById("createPurchaseOrderBtn");
+if (createPurchaseOrderBtn) {
+    createPurchaseOrderBtn.addEventListener("click", createPurchaseOrder);
+}
+
+const purchaseOrderList = document.getElementById("purchaseOrderList");
+if (purchaseOrderList) {
+    purchaseOrderList.addEventListener("click", (event) => {
+        const button = event.target.closest("button.receive-order-btn");
+        if (!button) {
+            return;
+        }
+
+        const orderId = Number(button.dataset.id);
+        if (Number.isInteger(orderId)) {
+            receivePurchaseOrder(orderId);
+        }
+    });
+}
+
 async function deleteProduct(id) {
     try {
+        const userId = Number(localStorage.getItem("userId"));
         const response = await fetch(`/products/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
-            }
+            },
+            body:JSON.stringify({userId})
         });
 
         const data = await response.json();
@@ -357,6 +553,7 @@ async function saveEditProduct(id) {
     }
 
     try {
+        const userId = Number(localStorage.getItem("userId"));
         const response = await fetch(`/products/${id}`, {
             method: "PUT",
             headers: {
@@ -364,7 +561,8 @@ async function saveEditProduct(id) {
             },
             body: JSON.stringify({
                 productName,
-                janCode
+                janCode,
+                userId
             })
         });
 
@@ -387,6 +585,7 @@ async function addProduct() {
     const janCode = document.getElementById("janCode").value.trim();
     const stockValue = document.getElementById("stock").value.trim();
     const stock = Number(stockValue);
+    const userId = Number(localStorage.getItem("userid"));
 
     if (!productName || !janCode || stockValue === "" || Number.isNaN(stock)) {
         alert("商品名、JANコード、初期在庫を正しく入力してください。" );
@@ -417,7 +616,8 @@ async function addProduct() {
             body: JSON.stringify({
                 productName,
                 janCode,
-                stock
+                stock,
+                userId
             })
         });
 
@@ -450,6 +650,16 @@ if (toggleAddFormBtn && addProductPanel) {
         const isOpen = addProductPanel.classList.toggle("visible");
         toggleAddFormBtn.setAttribute("aria-expanded", String(isOpen));
         toggleAddFormBtn.textContent = isOpen ? "×" : "＋";
+    });
+}
+
+const togglePurchaseOrderFormBtn = document.getElementById("togglePurchaseOrderFormBtn");
+const purchaseOrderPanel = document.getElementById("purchaseOrderPanel");
+if (togglePurchaseOrderFormBtn && purchaseOrderPanel) {
+    togglePurchaseOrderFormBtn.addEventListener("click", () => {
+        const isOpen = purchaseOrderPanel.classList.toggle("visible");
+        togglePurchaseOrderFormBtn.setAttribute("aria-expanded", String(isOpen));
+        togglePurchaseOrderFormBtn.textContent = isOpen ? "×" : "＋";
     });
 }
 
@@ -516,4 +726,130 @@ if (stockInput) {
     stockInput.addEventListener("input", () => {
         removeFullWidthDigits(stockInput);
     });
+}
+
+const historyButton = document.getElementById("historyButton");
+
+if(historyButton){
+    historyButton.addEventListener("click",() => {
+        window.location.href = "operation-history.html";
+    });
+}
+
+function pad2(value) {
+    return String(value).padStart(2, "0");
+}
+
+function formatCsvDate(value) {
+    if (!value) {
+        return "";
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+
+    return `${date.getFullYear()}/${pad2(date.getMonth() + 1)}/${pad2(date.getDate())} ${pad2(date.getHours())}:${pad2(date.getMinutes())}:${pad2(date.getSeconds())}`;
+}
+
+function buildCsvRows(rows) {
+    if (!Array.isArray(rows) || rows.length === 0) {
+        return "";
+    }
+
+    const headers = Object.keys(rows[0]);
+    const csvLines = [headers.join(",")];
+
+    rows.forEach((row) => {
+        const values = headers.map((header) => {
+            const value = row[header] ?? "";
+            const escaped = String(value).replace(/"/g, '""');
+            return `"${escaped}"`;
+        });
+        csvLines.push(values.join(","));
+    });
+
+    return csvLines.join("\n");
+}
+
+function downloadCsv(filename, rows) {
+    const content = buildCsvRows(rows);
+    const bom = "\uFEFF";
+    const blob = new Blob([bom + content], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+}
+
+async function exportPurchaseHistoryCsv() {
+    try {
+        const response = await fetch("/purchase-orders");
+        const data = await response.json();
+        const rows = Array.isArray(data.orders)
+            ? data.orders.map((order) => ({
+                日時: formatCsvDate(order.created_at),
+                商品名: order.product_name || "",
+                仕入先: order.supplier_name || "",
+                数量: order.quantity ?? 0,
+                状態: order.status || "",
+                希望納品日: order.expected_date || "",
+                備考: order.order_note || ""
+            }))
+            : [];
+
+        downloadCsv("purchase_history.csv", rows);
+    } catch (error) {
+        console.error(error);
+        alert("発注履歴のCSV出力に失敗しました。");
+    }
+}
+
+async function exportDiscardHistoryCsv() {
+    try {
+        const response = await fetch("/operation-logs");
+        const data = await response.json();
+        const rows = Array.isArray(data.logs)
+            ? data.logs
+                .filter((log) => String(log.action) === "廃棄")
+                .map((log) => ({
+                    日時: formatCsvDate(log.created_at),
+                    商品名: log.product_name || "",
+                    操作: log.action || "",
+                    社員名: log.name || "",
+                    社員ID: log.employee_id || ""
+                }))
+            : [];
+
+        downloadCsv("discard_history.csv", rows);
+    } catch (error) {
+        console.error(error);
+        alert("廃棄履歴のCSV出力に失敗しました。");
+    }
+}
+
+const csvExportToggle = document.getElementById("csvExportToggle");
+const csvExportMenu = document.getElementById("csvExportMenu");
+const exportPurchaseHistoryBtn = document.getElementById("exportPurchaseHistoryBtn");
+const exportDiscardHistoryBtn = document.getElementById("exportDiscardHistoryBtn");
+
+if (csvExportToggle && csvExportMenu) {
+    csvExportToggle.addEventListener("click", () => {
+        const isOpen = csvExportMenu.classList.toggle("open");
+        csvExportToggle.setAttribute("aria-expanded", String(isOpen));
+    });
+}
+
+if (exportPurchaseHistoryBtn) {
+    exportPurchaseHistoryBtn.addEventListener("click", exportPurchaseHistoryCsv);
+}
+
+if (exportDiscardHistoryBtn) {
+    exportDiscardHistoryBtn.addEventListener("click", exportDiscardHistoryCsv);
 }

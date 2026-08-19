@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>在庫更新</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="mobile-shell">
+        <header class="app-header compact-header">
+            <div class="header-title">在庫管理</div>
+            <div class="header-company">杉カンパニー</div>
+        </header>
+
+        <main class="mobile-stock-container">
+            <div class="mobile-panel mobile-input-panel">
+                <h2 id="stockTitle">検品入力</h2>
+
+                <label for="mobileProductId">商品ID</label>
+                <input id="mobileProductId" type="number" min="1" placeholder="商品IDを入力" />
+
+                <label for="mobileProductName">商品名</label>
+                <input id="mobileProductName" type="text" placeholder="商品名を入力" />
+
+                <label for="mobileQuantity">数量</label>
+                <input id="mobileQuantity" type="number" min="1" value="1" placeholder="数量" />
+
+                <button id="mobileSaveBtn" class="primary-btn" type="button">在庫を更新</button>
+            </div>
+
+            <div class="mobile-panel mobile-scan-panel">
+                <button id="scanBarcodeBtn" class="scan-btn" type="button">バーコード読み取り</button>
+                <video id="cameraPreview" autoplay playsinline muted></video>
+                <p id="scanMessage">カメラを起動してバーコードを読み取ります。</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const action = params.get('action') || 'receive';
+        const actionLabel = action === 'discard' ? '廃棄' : '検品';
+
+        document.getElementById('stockTitle').textContent = `${actionLabel}入力`;
+
+        const mobileSaveBtn = document.getElementById('mobileSaveBtn');
+        const scanBarcodeBtn = document.getElementById('scanBarcodeBtn');
+        const cameraPreview = document.getElementById('cameraPreview');
+        const scanMessage = document.getElementById('scanMessage');
+
+        let stream = null;
+        let detectionTimer = null;
+
+        const updateStock = async (payload) => {
+            const response = await fetch('/stock/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                scanMessage.textContent = `${actionLabel}を登録しました。`;
+                setTimeout(() => {
+                    window.location.href = 'mobile-menu.html';
+                }, 500);
+                return;
+            }
+
+            alert(data.message || `${actionLabel}に失敗しました。`);
+        };
+
+        const fillProductFields = (product) => {
+            document.getElementById('mobileProductId').value = product.id;
+            document.getElementById('mobileProductName').value = product.product_name;
+            document.getElementById('mobileQuantity').value = 1;
+        };
+
+        const handleBarcode = async (barcode) => {
+            try {
+                scanMessage.textContent = `バーコード ${barcode} を検出しました`; 
+                const response = await fetch(`/products/barcode/${encodeURIComponent(barcode)}`);
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    alert(data.message || '該当する商品が見つかりませんでした。');
+                    return;
+                }
+
+                const product = data.product;
+                fillProductFields(product);
+
+                const userId = Number(localStorage.getItem('userId'));
+                const quantity = Number(document.getElementById('mobileQuantity').value) || 1;
+
+                await updateStock({
+                    id: product.id,
+                    action,
+                    userId,
+                    quantity
+                });
+            } catch (error) {
+                console.error(error);
+                alert('バーコード処理に失敗しました。');
+            }
+        };
+
+        mobileSaveBtn.addEventListener('click', () => {
+            const productId = Number(document.getElementById('mobileProductId').value);
+            const quantity = Number(document.getElementById('mobileQuantity').value);
+            const productName = document.getElementById('mobileProductName').value.trim();
+            const userId = Number(localStorage.getItem('userId'));
+
+            if (!Number.isInteger(productId) || productId <= 0) {
+                alert('商品IDを正しく入力してください。');
+                return;
+            }
+
+            if (!productName) {
+                alert('商品名を入力してください。');
+                return;
+            }
+
+            if (!Number.isInteger(quantity) || quantity <= 0) {
+                alert('数量は1以上で入力してください。');
+                return;
+            }
+
+            updateStock({
+                id: productId,
+                action,
+                userId,
+                quantity
+            });
+        });
+
+        const stopCamera = () => {
+            if (detectionTimer) {
+                clearInterval(detectionTimer);
+                detectionTimer = null;
+            }
+
+            if (stream) {
+                stream.getTracks().forEach((track) => track.stop());
+                stream = null;
+            }
+
+            if (cameraPreview) {
+                cameraPreview.classList.remove('active');
+                cameraPreview.srcObject = null;
+            }
+        };
+
+        const startCamera = async () => {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                scanMessage.textContent = 'この端末ではカメラが使えません。手入力でご利用ください。';
+                return;
+            }
+
+            try {
+                stopCamera();
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' }
+                });
+
+                cameraPreview.classList.add('active');
+                cameraPreview.srcObject = stream;
+                scanMessage.textContent = 'カメラ起動中... バーコードをかざしてください';
+
+                if ('BarcodeDetector' in window) {
+                    const barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'code128', 'qr_code'] });
+
+                    detectionTimer = setInterval(async () => {
+                        try {
+                            const barcodes = await barcodeDetector.detect(cameraPreview);
+                            if (barcodes && barcodes.length > 0) {
+                                const code = barcodes[0].rawValue;
+                                stopCamera();
+                                await handleBarcode(code);
+                            }
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    }, 800);
+                    return;
+                }
+
+                scanMessage.textContent = 'このブラウザでは自動読み取りに対応していません。手入力でご利用ください。';
+            } catch (error) {
+                console.error(error);
+                scanMessage.textContent = 'カメラを起動できませんでした。ブラウザの権限を確認してください。';
+            }
+        };
+
+        scanBarcodeBtn.addEventListener('click', startCamera);
+    </script>
+</body>
+</html>

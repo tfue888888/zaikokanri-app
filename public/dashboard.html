@@ -15,6 +15,15 @@
         <button id="dashboardButton" type="button">ダッシュボード</button>
         <button id="productButton" type="button">商品一覧</button>
         <button id="historyButton" type="button">操作履歴</button>
+
+        <div class="csv-export-menu">
+            <button id="csvExportToggle" type="button" class="csv-export-toggle" aria-expanded="false">CSV出力</button>
+            <div id="csvExportMenu" class="csv-export-submenu">
+                <button id="exportPurchaseHistoryBtn" type="button">発注履歴を出力</button>
+                <button id="exportDiscardHistoryBtn" type="button">廃棄履歴を出力</button>
+            </div>
+        </div>
+
         <button id="logoutButton" type="button">ログアウト</button>
     </div>
 
@@ -66,6 +75,30 @@
                     追加する
                 </button>
             </div>
+        </section>
+
+        <section class="purchase-order-section">
+            <div class="purchase-order-header-row">
+                <div class="section-title purchase-order-header">
+                    <h2>発注管理</h2>
+                </div>
+                <button id="togglePurchaseOrderFormBtn" type="button" class="toggle-form-btn" aria-expanded="false" aria-controls="purchaseOrderPanel">＋</button>
+            </div>
+
+            <div id="purchaseOrderPanel" class="purchase-order-panel">
+                <div class="purchase-order-form">
+                    <select id="purchaseProductId" aria-label="発注商品選択">
+                        <option value="">商品を選択</option>
+                    </select>
+                    <input id="purchaseSupplier" type="text" placeholder="仕入先名" maxlength="50">
+                    <input id="purchaseQuantity" type="number" min="1" placeholder="発注数量" inputmode="numeric">
+                    <input id="purchaseExpectedDate" type="date" placeholder="希望納品日">
+                    <input id="purchaseNote" type="text" placeholder="備考（任意）" maxlength="255">
+                    <button id="createPurchaseOrderBtn" type="button" class="stock-btn">発注を登録</button>
+                </div>
+            </div>
+
+            <div id="purchaseOrderList" class="purchase-order-list" aria-live="polite"></div>
         </section>
 
         <section class="search-section" aria-label="商品検索">

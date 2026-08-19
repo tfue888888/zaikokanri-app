@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>在庫操作メニュー</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="mobile-shell">
+        <header class="app-header compact-header">
+            <div class="header-title">在庫管理</div>
+            <div class="header-company">杉カンパニー</div>
+        </header>
+
+        <main class="mobile-menu-container">
+            <h1 class="mobile-title">操作を選択してください</h1>
+
+            <div class="mobile-menu-grid">
+                <button class="mobile-action-btn" data-action="receive" type="button">
+                    検品
+                </button>
+                <button class="mobile-action-btn" data-action="discard" type="button">
+                    廃棄
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const actionButtons = document.querySelectorAll('.mobile-action-btn');
+
+        actionButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const action = button.dataset.action;
+                localStorage.setItem('mobileAction', action);
+                window.location.href = `mobile-stock.html?action=${action}`;
+            });
+        });
+    </script>
+</body>
+</html>
