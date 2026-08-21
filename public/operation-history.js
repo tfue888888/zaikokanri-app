@@ -1,4 +1,4 @@
-const API_BASE_URL = (window.__API_BASE_URL__ || "https://<your-render-app-name>.onrender.com").replace(/\/$/, "");
+const API_BASE_URL = (window.__API_BASE_URL__ || "https://zaikokanri-app.onrender.com").replace(/\/$/, "");
 
 const HISTORY_PAGE_SIZE = 20;
 let historyCurrentPage = 1;
