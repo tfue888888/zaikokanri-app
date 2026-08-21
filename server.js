@@ -1,11 +1,15 @@
 
 const express = require("express");
 const mysql = require("mysql2");
+const cors = require("cors");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const { count } = require("console");
 
 const app = express();
+app.use(cors({
+    origin:"https://zaikokanri-app-one.vercel.app"
+}));
 const port = 3000;
 
 require("dotenv").config();
