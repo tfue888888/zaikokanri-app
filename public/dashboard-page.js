@@ -1,7 +1,9 @@
+const API_BASE_URL = (window.__API_BASE_URL__ || "https://<your-render-app-name>.onrender.com").replace(/\/$/, "");
+
 async function
 loadProductCount(){
 
-    const response = await fetch("/dashboard/product-count");
+    const response = await fetch(`${API_BASE_URL}/dashboard/product-count`);
     const data = await response.json();
 
 document.getElementById("productCount").textContent = data.count + "件";
@@ -11,7 +13,7 @@ loadProductCount();
 
 async function loadLowStockCount(){
     try {
-        const response = await fetch("/dashboard/low-stock");
+        const response = await fetch(`${API_BASE_URL}/dashboard/low-stock`);
 
         if (!response.ok) {
             throw new Error("在庫不足数の取得に失敗しました");
@@ -26,7 +28,7 @@ async function loadLowStockCount(){
 }
 
 async function loadTodaySales(){
-    const response = await fetch("/dashboard/today-sales");
+    const response = await fetch(`${API_BASE_URL}/dashboard/today-sales`);
     const data = await response.json();
 
 document.getElementById("todaySales")
@@ -144,7 +146,7 @@ function downloadCsv(filename, rows) {
 
 async function exportPurchaseHistoryCsv() {
     try {
-        const response = await fetch("/purchase-orders");
+        const response = await fetch(`${API_BASE_URL}/purchase-orders`);
         const data = await response.json();
         const rows = Array.isArray(data.orders)
             ? data.orders.map((order) => ({
@@ -167,7 +169,7 @@ async function exportPurchaseHistoryCsv() {
 
 async function exportDiscardHistoryCsv() {
     try {
-        const response = await fetch("/operation-logs");
+        const response = await fetch(`${API_BASE_URL}/operation-logs`);
         const data = await response.json();
         const rows = Array.isArray(data.logs)
             ? data.logs

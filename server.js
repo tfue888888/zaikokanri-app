@@ -13,17 +13,12 @@ require("dotenv").config();
 app.use(express.json());
 app.use(express.static(path.join(__dirname,"public")));
 
-const db = mysql.createPool({
+const db = mysql.createConnection({
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    connectTimeout: 60000,
-    enableKeepAlive: true,
-    keepAliveInitialDelay: 30000
+    database: process.env.DB_NAME
 });
 
 const createPurchaseOrdersTableSql = `

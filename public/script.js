@@ -1,3 +1,5 @@
+const API_BASE_URL = (window.__API_BASE_URL__ || "https://<your-render-app-name>.onrender.com").replace(/\/$/, "");
+
 const loginBtn = document.getElementById("loginBtn");
 
 loginBtn.addEventListener("click", async () => {
@@ -11,7 +13,7 @@ loginBtn.addEventListener("click", async () => {
         return;
     }
 
-    const response = await fetch("/login", {
+    const response = await fetch(`${API_BASE_URL}/login`, {
 
         method: "POST",
 

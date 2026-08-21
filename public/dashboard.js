@@ -1,3 +1,5 @@
+const API_BASE_URL = (window.__API_BASE_URL__ || "https://<your-render-app-name>.onrender.com").replace(/\/$/, "");
+
 const logoutBtn = document.getElementById("logoutBtn");
 let allProducts = [];
 let allPurchaseOrders = [];
@@ -194,7 +196,7 @@ function renderCurrentProducts() {
 
 async function loadProducts() {
     try {
-        const response = await fetch("/products");
+        const response = await fetch(`${API_BASE_URL}/products`);
 
         if (!response.ok) {
             throw new Error("商品データの取得に失敗しました");
@@ -236,7 +238,7 @@ function populatePurchaseOrderOptions() {
 
 async function loadPurchaseOrders() {
     try {
-        const response = await fetch("/purchase-orders");
+        const response = await fetch(`${API_BASE_URL}/purchase-orders`);
 
         if (!response.ok) {
             throw new Error("発注データの取得に失敗しました");
@@ -317,7 +319,7 @@ async function createPurchaseOrder() {
     }
 
     try {
-        const response = await fetch("/purchase-orders", {
+        const response = await fetch(`${API_BASE_URL}/purchase-orders`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -362,7 +364,7 @@ async function receivePurchaseOrder(orderId) {
     }
 
     try {
-        const response = await fetch(`/purchase-orders/${orderId}/receive`, {
+        const response = await fetch(`${API_BASE_URL}/purchase-orders/${orderId}/receive`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -398,7 +400,7 @@ async function updateStock(id, action) {
             return;
         }
 
-        const response = await fetch("/stock/update", {
+        const response = await fetch(`${API_BASE_URL}/stock/update`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -499,7 +501,7 @@ if (purchaseOrderList) {
 async function deleteProduct(id) {
     try {
         const userId = Number(localStorage.getItem("userId"));
-        const response = await fetch(`/products/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/products/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
@@ -554,7 +556,7 @@ async function saveEditProduct(id) {
 
     try {
         const userId = Number(localStorage.getItem("userId"));
-        const response = await fetch(`/products/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/products/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -608,7 +610,7 @@ async function addProduct() {
     }
 
     try {
-        const response = await fetch("/products", {
+        const response = await fetch(`${API_BASE_URL}/products`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -790,7 +792,7 @@ function downloadCsv(filename, rows) {
 
 async function exportPurchaseHistoryCsv() {
     try {
-        const response = await fetch("/purchase-orders");
+        const response = await fetch(`${API_BASE_URL}/purchase-orders`);
         const data = await response.json();
         const rows = Array.isArray(data.orders)
             ? data.orders.map((order) => ({
@@ -813,7 +815,7 @@ async function exportPurchaseHistoryCsv() {
 
 async function exportDiscardHistoryCsv() {
     try {
-        const response = await fetch("/operation-logs");
+        const response = await fetch(`${API_BASE_URL}/operation-logs`);
         const data = await response.json();
         const rows = Array.isArray(data.logs)
             ? data.logs

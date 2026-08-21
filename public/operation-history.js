@@ -1,3 +1,5 @@
+const API_BASE_URL = (window.__API_BASE_URL__ || "https://<your-render-app-name>.onrender.com").replace(/\/$/, "");
+
 const HISTORY_PAGE_SIZE = 20;
 let historyCurrentPage = 1;
 let historyAllLogs = [];
@@ -133,7 +135,8 @@ async function loadOperationHistory(keyword = "", date = "", action = "", days =
             params.set("days", String(days));
         }
 
-        const response = await fetch(`/operation-logs${params.toString() ? `?${params.toString()}` : ""}`);
+        const url = `${API_BASE_URL}/operation-logs${params.toString() ? `?${params.toString()}` : ""}`;
+        const response = await fetch(url);
 
         if (!response.ok) {
             throw new Error("操作履歴の取得に失敗しました");
@@ -375,7 +378,7 @@ function downloadCsv(filename, rows) {
 
 async function exportPurchaseHistoryCsv() {
     try {
-        const response = await fetch("/purchase-orders");
+        const response = await fetch(`${API_BASE_URL}/purchase-orders`);
         const data = await response.json();
         const rows = Array.isArray(data.orders)
             ? data.orders.map((order) => ({
@@ -398,7 +401,7 @@ async function exportPurchaseHistoryCsv() {
 
 async function exportDiscardHistoryCsv() {
     try {
-        const response = await fetch("/operation-logs");
+        const response = await fetch(`${API_BASE_URL}/operation-logs`);
         const data = await response.json();
         const rows = Array.isArray(data.logs)
             ? data.logs

@@ -38,6 +38,8 @@
     </div>
 
     <script>
+        const API_BASE_URL = (window.__API_BASE_URL__ || "https://<your-render-app-name>.onrender.com").replace(/\/$/, "");
+
         const params = new URLSearchParams(window.location.search);
         const action = params.get('action') || 'receive';
         const actionLabel = action === 'discard' ? '廃棄' : '検品';
@@ -53,7 +55,7 @@
         let detectionTimer = null;
 
         const updateStock = async (payload) => {
-            const response = await fetch('/stock/update', {
+            const response = await fetch(`${API_BASE_URL}/stock/update`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -80,7 +82,7 @@
         const handleBarcode = async (barcode) => {
             try {
                 scanMessage.textContent = `バーコード ${barcode} を検出しました`; 
-                const response = await fetch(`/products/barcode/${encodeURIComponent(barcode)}`);
+                const response = await fetch(`${API_BASE_URL}/products/barcode/${encodeURIComponent(barcode)}`);
                 const data = await response.json();
 
                 if (!response.ok || !data.success) {
