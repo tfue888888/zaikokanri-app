@@ -309,6 +309,8 @@ button:focus {
     text-align: center;
     min-height: 20px;
     white-space: nowrap;
+    position: relative;
+    top: 15px;
 }
 
 @media screen and (max-width: 768px) {
