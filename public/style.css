@@ -190,7 +190,7 @@ button:focus {
     flex-direction: column;
     height: calc(100vh - 88px);
     padding: 18px 18px 24px;
-    gap: 16px;
+    gap: 26px;
     overflow: hidden;
 }
 
@@ -239,6 +239,7 @@ button:focus {
     display: flex;
     flex-direction: column;
     padding: 16px;
+    transform: translateY(-10px);
 }
 
 .mobile-input-panel h2 {
