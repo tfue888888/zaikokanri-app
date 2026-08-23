@@ -270,8 +270,8 @@ button:focus {
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
-    padding: 14px 14px 104px;
-    min-height: 200px;
+    padding: 10px 14px 12px;
+    min-height: 112px;
     margin-top: auto;
 }
 
@@ -305,6 +305,7 @@ button:focus {
     color: var(--muted);
     text-align: center;
     min-height: 20px;
+    white-space: nowrap;
 }
 
 @media screen and (max-width: 768px) {
