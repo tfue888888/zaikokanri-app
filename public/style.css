@@ -273,6 +273,7 @@ button:focus {
     padding: 10px 14px 32px;
     min-height: 112px;
     margin-top: auto;
+    transform: translateY(-15px);
 }
 
 .scan-btn {
@@ -282,6 +283,8 @@ button:focus {
     min-height: 52px;
     margin-top: auto;
     margin-bottom: 10px;
+    position: relative;
+    top: 20px;
 }
 
 #cameraPreview {
