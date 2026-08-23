@@ -270,7 +270,7 @@ button:focus {
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
-    padding: 10px 14px 12px;
+    padding: 10px 14px 32px;
     min-height: 112px;
     margin-top: auto;
 }
