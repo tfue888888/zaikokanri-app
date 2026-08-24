@@ -4,7 +4,12 @@
 
 画面の写真
 
-<img src="108184.jpg" alt="ログイン画面" width="400">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(180px, 1fr)); gap: 12px; max-width: 520px;">
+  <img src="images/108184.jpg" alt="ログイン画面" style="width: 100%; height: auto; border-radius: 6px;">
+  <img src="images/108185.jpg" alt="商品一覧画面" style="width: 100%; height: auto; border-radius: 6px;">
+  <img src="images/108186.jpg" alt="発注画面" style="width: 100%; height: auto; border-radius: 6px;">
+  <img src="images/108187.jpg" alt="在庫管理画面" style="width: 100%; height: auto; border-radius: 6px;">
+</div>
 
 デモ：実際にアプリを操作できます。（デモアカウント：社員ID：EMP001,パスワード：tanaka123）
 
