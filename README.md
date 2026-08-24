@@ -5,10 +5,10 @@
 画面の写真
 
 <div style="display: grid; grid-template-columns: repeat(2, minmax(120px, 1fr)); gap: 10px; max-width: 320px;">
-  <img src="images/108184.jpg" alt="ログイン画面" style="width: 100%; height: auto; display: block; border-radius: 6px;">
-  <img src="images/108185.jpg" alt="商品一覧画面" style="width: 100%; height: auto; display: block; border-radius: 6px;">
-  <img src="images/108186.jpg" alt="発注画面" style="width: 100%; height: auto; display: block; border-radius: 6px;">
-  <img src="images/108187.jpg" alt="在庫管理画面" style="width: 100%; height: auto; display: block; border-radius: 6px;">
+  <img src="images/108184.jpg" alt="ログイン画面" style="width: 30%; height: 30%; display: block; border-radius: 6px;">
+  <img src="images/108185.jpg" alt="商品一覧画面" style="width: 30%; height: 30%; display: block; border-radius: 6px;">
+  <img src="images/108186.jpg" alt="発注画面" style="width: 30%; height: 30%; display: block; border-radius: 6px;">
+  <img src="images/108187.jpg" alt="在庫管理画面" style="width: 30%; height: 30%; display: block; border-radius: 6px;">
 </div>
 
 デモ：実際にアプリを操作できます。（デモアカウント：社員ID：EMP001,パスワード：tanaka123）
